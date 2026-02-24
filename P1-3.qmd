@@ -1,0 +1,69 @@
+---
+title: "TSAR Project Assignment Part1 - Group 3"
+format: html
+editor: visual
+---
+
+## Introduction
+
+## Preliminary tasks
+
+This analysis begins by establishing the necessary computational environment in R and importing the required dataset. First, the script ensures that essential data manipulation libraries, specifically `data.table` and `dplyr`, are installed and loaded. Following this setup, the code loads the working dataset named `myLCdata.csv`. The commented code outlines the reproducible generation of this working file from the original `LCdata.csv` dataset. By setting a fixed random seed, the script extracted a 50 percent random sample of the observations and selected 5 of the 19 available features.
+
+### Package installation
+
+```{r}
+# install the required packages if needed
+if (!require("data.table")) install.packages("data.table")
+if (!require("dplyr")) install.packages("dplyr")
+# load them
+library(data.table)
+library(dplyr)
+```
+
+### Loading data
+
+```{r}
+# Random sample your group's data set from the original LCdata data set
+#LCdata <- fread("LCdata.csv")
+#set.seed(3)
+#myLCdata <- LCdata %>% sample(5) %>% slice_sample(prop = .5)
+#fwrite(myLCdata, file = "myLCdata.csv")
+myLCdata <- fread("myLCdata.csv")
+```
+
+## Tasks
+
+### Task 1. Business Understanding
+
+```{r}
+glimpse(myLCdata)
+str(myLCdata)
+# Extracting the first 6 rows of the data to get an understanding
+head(myLCdata)
+```
+
+**Data mapping**
+
++----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Name**             | **Description**                                                                                                                                                                                                              |
++----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **`annual_inc`**     | The self-reported annual income provided by the borrower during registration.                                                                                                                                                |
++----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **`home_ownership`** | The home ownership status provided by the borrower during registration. Our values are: RENT, OWN, MORTGAGE, OTHER.                                                                                                          |
++----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **`inq_last_6mths`** | The number of inquiries in past 6 months (excluding auto and mortgage inquiries)                                                                                                                                             |
++----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **`open_acc`**       | The number of open credit lines in the borrower's credit file.\                                                                                                                                                              |
+|                      | Remark:\                                                                                                                                                                                                                     |
+|                      | - A credit line is a type of loan that allows an individual or business to borrow money and repay it, often on a revolving basis without applying for a new loan.\                                                           |
+|                      | - A revolving credit is a credit line that remains available even as you pay the balance. Borrowers can access credit up to a certain amount and then have ongoing access to that amount of credit. Typically a credit card. |
++----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **`purpose`**        | A category provided by the borrower for the loan request.                                                                                                                                                                    |
++----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+### Task 2. Data Understanding Based on Summary Statistics
+
+### Task 3. Univariate Exploratory Data Analysis (EDA) with ggplot2
+
+### Task 4. Bivariate EDA with ggplot2
