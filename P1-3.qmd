@@ -64,6 +64,113 @@ head(myLCdata)
 
 ### Task 2. Data Understanding Based on Summary Statistics
 
+```{r}
+summary(myLCdata)
+skimr::skim(myLCdata)
+```
+
 ### Task 3. Univariate Exploratory Data Analysis (EDA) with ggplot2
 
+Now we want to shift from Data Understanding to Data Exploration. Because we have numerical and categorical data, we'll use plots respectively.
+
+3.1 Numerical Variables
+
+-   annual_inc
+
+-   open_acc
+
+-   inq_last_6mths
+
+3.2 Categorical Variables
+
+-   home_ownership
+
+-   purpose
+
+```{r}
+library(ggplot2)
+
+# 3.1 annual_inc
+ggplot(myLCdata, aes(x = annual_inc)) +
+  geom_histogram(bins = 30, fill = "steelblue", color = "white") + 
+  scale_x_log10() + 
+  labs(title = "Distribution of Annual Income (Log Scale)", x = "Annual Income", y = "Count")
+
+# 3.1 open_acc
+ggplot(myLCdata, aes(x = open_acc)) + 
+  geom_histogram(binwidth = 1, fill = "darkorange", color = "black", alpha = 0.8) + 
+  labs(title = "Distribution of Open Credit Lines", 
+       x = "Number of Open Accounts",
+       y = "Frequency") +
+  theme_minimal()
+
+# 3.1 inq_last_6mths
+ggplot(myLCdata, aes(x=inq_last_6mths)) +
+  geom_bar(fill="seagreen", color="black", alpha=0.8) +
+  labs(title = "Inquiries in the Past 6 Months",
+       x = "Number of Inquiries", 
+       y = "Frequency") + 
+  theme_minimal()
+
+# 3.2 purpose
+ggplot(myLCdata, aes(x = purpose)) + 
+  geom_bar(fill = "tomato") + 
+  coord_flip() + 
+  labs(title = "Frequency of Loan Purposes")
+```
+
 ### Task 4. Bivariate EDA with ggplot2
+
+Now we will look at how the variables interact. Here we should find the story in our data.
+
+4.1 Numeric vs. Categorical
+
+-   home_ownership vs. annual_inc
+
+```{r}
+ggplot(myLCdata, aes(x = home_ownership, y = annual_inc, fill = home_ownership)) + 
+  geom_boxplot(alpha = 0.7) +
+  scale_y_log10(labels = scales::comma) +
+  labs(title = "Annual Income by Home Ownership Status",
+       x = "Home Ownership",
+       y = "Annual Income (Log Scale)") + 
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+4.2 Numeric vs. Numeric
+
+-   open_acc vs. inq_last_6mths
+
+We use geom_jitter to add tiny amounts of random noise to the placement of the dots. We also add a trend line to see if there is any relationship.
+
+```{r}
+ggplot(myLCdata, aes(x = open_acc, y = inq_last_6mths)) +
+  geom_jitter(alpha = 0.3, color = "purple", width = 0.25, height = 0.25) +
+  geom_smooth(method = "lm", color = "black", se = FALSE) + 
+  labs(title = "Open Accounts vs. Recent Inquiries",
+       subtitle = "Points are jittered to reveal data density",
+       x = "Number of open Accounts",
+       y = "Inquiries in the Past 6 Months") + 
+  theme_minimal()
+```
+
+4.3 Categorical vs. Categorical
+
+-   purpose vs. home_ownership
+
+We want to see if loan purposes vary based on living situations. We use a 100% Stacked Bar Chart.
+
+```{r}
+ggplot(myLCdata, aes(x = purpose, fill = home_ownership)) + 
+  # position = fill standardizes the bars to 1.0
+  geom_bar(position = "fill", color = "white", linewidth = 0.2) +
+  coord_flip() +
+  scale_y_continuous(labels = scales::percent) + 
+  labs(title = "Proportion of Home Ownership by Loan Purpose",
+       x = "Loan Purpose",
+       y = "Percentage",
+       fill = "Home Ownership") +
+  theme_minimal() + theme(legend.position = "bottom")
+
+```
