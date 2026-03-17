@@ -2,6 +2,8 @@
 title: "TSAR Project Assignment Part1 - Group 3"
 format: html
 editor: visual
+execute: 
+  warning: false
 ---
 
 ## Introduction
