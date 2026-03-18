@@ -710,6 +710,24 @@ Remark:<br>
 <p>At the bottom we see the reversal from above, where ‘home_improvement’ loans are almost entirely taken out by mortage holders. This makes sense in our opinion, because their incentive to care for their immobilia is higher than the one for renters.</p>
 <p><strong>4.5 Adding a 3rd Variable</strong></p>
 <p>We will use facet_wrap</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(myLCdata) <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x=</span>annual_inc, <span class="at">y=</span>inq_last_6mths)) <span class="sc">+</span> <span class="fu">scale_x_log10</span>() <span class="sc">+</span> <span class="fu">scale_y_log10</span>() <span class="sc">+</span> <span class="fu">facet_wrap</span>(<span class="sc">~</span>home_ownership)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="P1-3_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(myLCdata) <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x=</span>annual_inc, <span class="at">y=</span>inq_last_6mths)) <span class="sc">+</span> <span class="fu">scale_x_log10</span>() <span class="sc">+</span> <span class="fu">scale_y_log10</span>() <span class="sc">+</span> <span class="fu">facet_wrap</span>(<span class="sc">~</span>purpose)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="P1-3_files/figure-html/unnamed-chunk-15-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 </section>
 

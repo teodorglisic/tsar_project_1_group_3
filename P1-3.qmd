@@ -291,3 +291,9 @@ At the bottom we see the reversal from above, where 'home_improvement' loans are
 **4.5 Adding a 3rd Variable**
 
 We will use facet_wrap
+
+```{r}
+ggplot(myLCdata) + geom_point(aes(x=annual_inc, y=inq_last_6mths)) + scale_x_log10() + scale_y_log10() + facet_wrap(~home_ownership)
+
+ggplot(myLCdata) + geom_point(aes(x=annual_inc, y=inq_last_6mths)) + scale_x_log10() + scale_y_log10() + facet_wrap(~purpose)
+```
