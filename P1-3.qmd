@@ -18,9 +18,17 @@ This analysis begins by establishing the necessary computational environment in 
 # install the required packages if needed
 if (!require("data.table")) install.packages("data.table")
 if (!require("dplyr")) install.packages("dplyr")
+if (!require("ggplot2")) install.packages("ggplot2")
+if (!require("GGally")) install.packages("GGally")
+
+
 # load them
 library(data.table)
 library(dplyr)
+library(ggplot2)
+library(GGally)
+
+# Show the scales as human readable numbers rather than scientific ones
 options(scipen = 999)
 ```
 
@@ -91,7 +99,7 @@ Now we want to shift from Data Understanding to Data Exploration. Because we hav
 -   purpose
 
 ```{r}
-library(ggplot2)
+
 
 # 3.1 annual_inc
 ggplot(myLCdata, aes(x = annual_inc)) +
@@ -134,7 +142,26 @@ ggplot(myLCdata, aes(x=inq_last_6mths)) +
        x = "Number of Inquiries", 
        y = "Frequency") + 
   theme_minimal()
+
+ggplot(myLCdata, aes(y=inq_last_6mths)) + 
+  geom_boxplot() + 
+  scale_y_log10()
+
+# Q1
+quantile(myLCdata$inq_last_6mths, .25, na.rm=TRUE)
+
+# median
+median(myLCdata$inq_last_6mths, na.rm=TRUE)
+
+# Q3
+quantile(myLCdata$inq_last_6mths, .75, na.rm=TRUE)
+
+myLCdata %>% group_by(inq_last_6mths) %>% summarise(count = n()) %>% arrange(-count)
 ```
+
+The variable inq_last_6mths shows the number of times one and the same person applied or inquired for a loan application. The lower the number, best case scenario would be 0, shows, that this person hasn't applied for another loan in the past 6 months, meaning that this person could theoetically be financially stable. A higher number could mean, that this person might be considered a risky customer, as they perhaps cannot repay the other loans, and therefore might be denied the loan application.
+
+The trend in the data is that the loan applicants have either applied for 0 loans, 1 loan or 2 loans in the 6 month period. This shows, that customers can apply while having an ongoing loan application. The outliers in this column are the customers, that have applied for multiple loans in the past 6 months, in our case the highest number of inquiries in the past 6 months are 10, 27 and 31, having each one customer. These three customers have therefore inquired for multiple loans in the past 6 months, and could therefore be classified as higher risk customers.
 
 ```{r}
 # 3.2 purpose
@@ -146,6 +173,13 @@ ggplot(myLCdata, aes(x = purpose)) +
 myLCdata %>% group_by(purpose) %>% summarise(count=n()) %>% arrange(-count)
 ```
 
+The diagram shows the overall distribution of the loan purposes. Using a `group_by` pipeline, it can be seen that debt consolidation is the primary reason why the loan has been requested.
+
+To understand what debt consolidation is, we must take a look at the definition: \
+"Debt consolidation is a form of debt refinancing that entails taking out one loan to pay off many others" (Wikipedia: Debt consolidation, 2026).
+
+This form of loan is common, as short term loans can have high interest rates, therefore, applicants may request a loan with a longer term, where the interest is significantly lower compared to short term loans.
+
 ### Task 4. Bivariate EDA with ggplot2
 
 Now we are looking for some obvious correlations or patterns of variables.
@@ -153,7 +187,6 @@ Now we are looking for some obvious correlations or patterns of variables.
 **4.1 First impression with ggpairs()**
 
 ```{r}
-library(GGally)
 GGally::ggpairs(myLCdata %>% select(annual_inc, open_acc, purpose, home_ownership, inq_last_6mths))
 ```
 
@@ -257,4 +290,4 @@ At the bottom we see the reversal from above, where 'home_improvement' loans are
 
 **4.5 Adding a 3rd Variable**
 
-We will use facet_wrap )
+We will use facet_wrap
