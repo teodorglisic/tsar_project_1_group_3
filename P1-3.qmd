@@ -21,6 +21,7 @@ if (!require("dplyr")) install.packages("dplyr")
 # load them
 library(data.table)
 library(dplyr)
+options(scipen = 999)
 ```
 
 ### Loading data
@@ -98,6 +99,24 @@ ggplot(myLCdata, aes(x = annual_inc)) +
   scale_x_log10() + 
   labs(title = "Distribution of Annual Income (Log Scale)", x = "Annual Income", y = "Count")
 
+ggplot(myLCdata, aes(y=annual_inc)) +
+  geom_boxplot() + 
+  scale_y_log10() + 
+  labs(y="Annual income (Log scale)", title="Boxplot visualisation of the annual_inc variable")
+
+# Q1
+quantile(myLCdata$annual_inc, .25)
+
+# median
+median(myLCdata$annual_inc)
+
+# Q3
+quantile(myLCdata$annual_inc, .75)
+```
+
+The upper visualizations show the distribution of the annual income based on a logarithmic scale. Using the additional functions `quantile()` and `median()` we can explore how the data is distributed. As seen the first quartile (25%) is 45649, the median is 65000 and the third quartile (75%) is 90000. Having these numbers it's visible, that 75% of loan applicants earn an annual income of 90000 and less, whereas only 25% earn an income greater than 90000. Numerous outliers are visible both above and below the whiskers. The scale reaches over 1,000,000 in the upper region. These extreme values are typical for income data because the distribution of salaries and incomes vary depending on gender, occupation and work experience
+
+```{r}
 # 3.1 open_acc
 ggplot(myLCdata, aes(x = open_acc)) + 
   geom_histogram(binwidth = 1, fill = "darkorange", color = "black", alpha = 0.8) + 
@@ -105,7 +124,9 @@ ggplot(myLCdata, aes(x = open_acc)) +
        x = "Number of Open Accounts",
        y = "Frequency") +
   theme_minimal()
+```
 
+```{r}
 # 3.1 inq_last_6mths
 ggplot(myLCdata, aes(x=inq_last_6mths)) +
   geom_bar(fill="seagreen", color="black", alpha=0.8) +
@@ -113,12 +134,16 @@ ggplot(myLCdata, aes(x=inq_last_6mths)) +
        x = "Number of Inquiries", 
        y = "Frequency") + 
   theme_minimal()
+```
 
+```{r}
 # 3.2 purpose
 ggplot(myLCdata, aes(x = purpose)) + 
   geom_bar(fill = "tomato") + 
   coord_flip() + 
   labs(title = "Frequency of Loan Purposes")
+
+myLCdata %>% group_by(purpose) %>% summarise(count=n()) %>% arrange(-count)
 ```
 
 ### Task 4. Bivariate EDA with ggplot2
