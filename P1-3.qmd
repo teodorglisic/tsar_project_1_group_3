@@ -404,11 +404,11 @@ ggplot(myLCdata) +
   guides(colour = FALSE) 
 ```
 
-The scatter plots illustrate the relationship between annual income and loan purpose. Debt consolidation and credit card refinancing are the most frequent loan categories across all income brackets.
+The scatter plots illustrate the relationship between annual income and inquiries in the last 6 months by the loan purpose. Debt consolidation and credit card refinancing are the most frequent loan categories across all income brackets.
 
 Applicants with exceptionally high annual incomes predominantly seek loans for debt consolidation, home improvement, and credit card payments. The data points in these specific charts extend far to the right and well beyond the one million income mark.
 
-Educational loans represent a very small portion of the overall dataset. A few applicants with incomes below 10000 do seek educational loans. Other individuals with incomes up to 100000 also apply for this loan type. This category is therefore not entirely exclusive to the lowest income bracket.
+Educational loans represent a very small portion of the overall dataset. A few applicants with incomes below 10000 do seek educational loans. Other individuals with incomes up to 100000 also apply for this loan type. This category is therefore not entirely exclusive to the lowest income bracket but it is important to note, that individuals with higher annual incomes do not tend to take up loans for an educational purpose.
 
 Categories like moving, vacations, and weddings are typically requested by individuals in lower to middle income ranges. The data points for these specific purposes rarely exceed an annual income of 200000.
 
