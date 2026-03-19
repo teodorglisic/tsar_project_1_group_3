@@ -1,6 +1,17 @@
 ---
 title: "TSAR Project Assignment Part1 - Group 3"
-format: html
+author:
+  - name: Arpad Broglie
+    email: arpad.broglie@students.fhnw.ch
+    corresponding: true
+  - name: Teodor Glisic
+    email: teodor.glisic@students.fhnw.ch
+    corresponding: true
+date: 03/19/2026
+date-format: "YYYY"
+format: 
+  pdf:
+    code-line-numbers: true
 editor: visual
 execute: 
   warning: false
@@ -56,22 +67,22 @@ head(myLCdata)
 
 **Data mapping**
 
-+----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **Name**             | **Description**                                                                                                                                                                                                              |
-+----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **`annual_inc`**     | The self-reported annual income provided by the borrower during registration.                                                                                                                                                |
-+----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **`home_ownership`** | The home ownership status provided by the borrower during registration. Our values are: RENT, OWN, MORTGAGE, OTHER.                                                                                                          |
-+----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **`inq_last_6mths`** | The number of inquiries in past 6 months (excluding auto and mortgage inquiries)                                                                                                                                             |
-+----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **`open_acc`**       | The number of open credit lines in the borrower's credit file.\                                                                                                                                                              |
-|                      | Remark:\                                                                                                                                                                                                                     |
-|                      | - A credit line is a type of loan that allows an individual or business to borrow money and repay it, often on a revolving basis without applying for a new loan.\                                                           |
-|                      | - A revolving credit is a credit line that remains available even as you pay the balance. Borrowers can access credit up to a certain amount and then have ongoing access to that amount of credit. Typically a credit card. |
-+----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **`purpose`**        | A category provided by the borrower for the loan request.                                                                                                                                                                    |
-+----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
++----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Name**       | **Description**                                                                                                                                                                                                              |
++----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| annual_inc     | The self-reported annual income provided by the borrower during registration.                                                                                                                                                |
++----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| home_ownership | The home ownership status provided by the borrower during registration. Our values are: RENT, OWN, MORTGAGE, OTHER.                                                                                                          |
++----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| inq_last_6mths | The number of inquiries in past 6 months (excluding auto and mortgage inquiries)                                                                                                                                             |
++----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| open_acc       | The number of open credit lines in the borrower's credit file.\                                                                                                                                                              |
+|                | Remark:\                                                                                                                                                                                                                     |
+|                | - A credit line is a type of loan that allows an individual or business to borrow money and repay it, often on a revolving basis without applying for a new loan.\                                                           |
+|                | - A revolving credit is a credit line that remains available even as you pay the balance. Borrowers can access credit up to a certain amount and then have ongoing access to that amount of credit. Typically a credit card. |
++----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| purpose        | A category provided by the borrower for the loan request.                                                                                                                                                                    |
++----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 ### Task 2. Data Understanding Based on Summary Statistics
 
@@ -80,11 +91,17 @@ summary(myLCdata)
 skimr::skim(myLCdata)
 ```
 
+**Interpretation of Summary Statistics**
+
+Regarding the overall quality of the dataset, it is highly remarkable that out of 44,369 total observations , only 2 rows contain missing values for the `open_acc` and `inq_last_6mths` variables . This translates to a completeness rate of over 99.99 percent. Real world financial data is rarely this clean. Because the proportion of missing data is so minimal, these two specific rows could simply be removed during the data preparation phase without causing any negative impact on future machine learning models or statistical analyses.
+
+Furthermore, the `annual_inc` variable shows a massive difference between the median (65,000) and the maximum value (6,000,000). This indicates a heavily right-skewed distribution with extreme outliers. In the context of peer-to-peer lending, an annual income of 6 million is highly suspicious. Individuals with such extreme wealth rarely need standard P2P loans, suggesting this could either be a massive outlier or a data entry error by the user during registration.
+
 ### Task 3. Univariate Exploratory Data Analysis (EDA) with ggplot2
 
 Now we want to shift from Data Understanding to Data Exploration. Because we have numerical and categorical data, we'll use plots respectively.
 
-3.1 Numerical Variables
+#### 3.1 Numerical Variables
 
 -   annual_inc
 
@@ -92,26 +109,29 @@ Now we want to shift from Data Understanding to Data Exploration. Because we hav
 
 -   inq_last_6mths
 
-3.2 Categorical Variables
-
--   home_ownership
-
--   purpose
-
 ```{r}
+#| label: fig-annual-inc-hist
+#| fig-cap: "Histogram showing the right-skewed distribution of annual income on a logarithmic scale."
 
-
-# 3.1 annual_inc
 ggplot(myLCdata, aes(x = annual_inc)) +
   geom_histogram(bins = 30, fill = "steelblue", color = "white") + 
   scale_x_log10() + 
   labs(title = "Distribution of Annual Income (Log Scale)", x = "Annual Income", y = "Count")
+```
+
+```{r}
+#| label: fig-annual-inc-box
+#| fig-cap: "Boxplot of annual income on a logarithmic scale highlighting extreme outliers."
 
 ggplot(myLCdata, aes(y=annual_inc)) +
   geom_boxplot() + 
   scale_y_log10() + 
   labs(y="Annual income (Log scale)", title="Boxplot visualisation of the annual_inc variable")
 
+
+```
+
+```{r}
 # Q1
 quantile(myLCdata$annual_inc, .25)
 
@@ -125,7 +145,9 @@ quantile(myLCdata$annual_inc, .75)
 The upper visualizations show the distribution of the annual income based on a logarithmic scale. Using the additional functions `quantile()` and `median()` we can explore how the data is distributed. As seen the first quartile (25%) is 45649, the median is 65000 and the third quartile (75%) is 90000. Having these numbers it's visible, that 75% of loan applicants earn an annual income of 90000 and less, whereas only 25% earn an income greater than 90000. Numerous outliers are visible both above and below the whiskers. The scale reaches over 1,000,000 in the upper region. These extreme values are typical for income data because the distribution of salaries and incomes vary depending on gender, occupation and work experience
 
 ```{r}
-# 3.1 open_acc
+#| label: fig-open-acc-hist
+#| fig-cap: "Histogram displaying the distribution of open credit lines among borrowers."
+
 ggplot(myLCdata, aes(x = open_acc)) + 
   geom_histogram(binwidth = 1, fill = "darkorange", color = "black", alpha = 0.8) + 
   labs(title = "Distribution of Open Credit Lines", 
@@ -135,18 +157,44 @@ ggplot(myLCdata, aes(x = open_acc)) +
 ```
 
 ```{r}
-# 3.1 inq_last_6mths
+#| label: fig-open-acc-box
+#| fig-cap: "Boxplot of open credit lines showing outliers with a high number of accounts."
+
+ggplot(myLCdata) + 
+  geom_boxplot(aes(y=open_acc)) + 
+  scale_y_log10() + 
+  labs(title="Boxplot of the open_acc variable", y="Open Accounts (Log Scale)")
+
+# Q1 + Q3
+quantile(myLCdata$open_acc, c(.25, .75), na.rm = TRUE)
+
+# median
+median(myLCdata$open_acc, na.rm = TRUE)
+```
+
+The variable open_acc shows the number of open credit lines for a single person. This value indicates the amount of active credit a borrower currently manages. A moderate number shows an established credit history.
+
+The data reveals a median of 11 accounts. The middle half of all applicants holds between 8 and 14 open credit lines. The histogram displays a clear right-skewed distribution. The curve flattens significantly towards the right. Only a small group of people has an extremely high number of accounts. The boxplot highlights outliers at both ends of the spectrum. Some individuals have just one single open account. Other extreme cases show customers with well over 30 active credit lines. A very high number of accounts indicates potential financial overextension. These individuals carry a higher risk for new loans.
+
+```{r}
+#| label: fig-inquiries-bar
+#| fig-cap: "Bar chart illustrating the frequency of loan inquiries in the past 6 months."
 ggplot(myLCdata, aes(x=inq_last_6mths)) +
   geom_bar(fill="seagreen", color="black", alpha=0.8) +
   labs(title = "Inquiries in the Past 6 Months",
        x = "Number of Inquiries", 
        y = "Frequency") + 
   theme_minimal()
+```
 
+```{r}
+#| label: fig-inquiries-box
+#| fig-cap: "Boxplot of recent loan inquiries revealing outliers."
 ggplot(myLCdata, aes(y=inq_last_6mths)) + 
   geom_boxplot() + 
-  scale_y_log10()
-
+  scale_y_log10() +
+  labs(title = "Boxplot of Recent Loan Inquiries",
+       y = "Inquiries in the Past 6 Months (Log Scale)")
 # Q1
 quantile(myLCdata$inq_last_6mths, .25, na.rm=TRUE)
 
@@ -163,8 +211,31 @@ The variable inq_last_6mths shows the number of times one and the same person ap
 
 The trend in the data is that the loan applicants have either applied for 0 loans, 1 loan or 2 loans in the 6 month period. This shows, that customers can apply while having an ongoing loan application. The outliers in this column are the customers, that have applied for multiple loans in the past 6 months, in our case the highest number of inquiries in the past 6 months are 10, 27 and 31, having each one customer. These three customers have therefore inquired for multiple loans in the past 6 months, and could therefore be classified as higher risk customers.
 
+#### 3.2 Categorical Variables
+
+-   home_ownership
+
+-   purpose
+
 ```{r}
-# 3.2 purpose
+#| label: fig-home-ownership-bar
+#| fig-cap: "Bar chart showing the count of applicants by home ownership status on a logarithmic scale."
+ggplot(myLCdata) + 
+  geom_bar(aes(x=home_ownership), fill="cornflowerblue") + 
+  labs(title="Home ownership types") + 
+  scale_y_log10()
+
+myLCdata %>% group_by(home_ownership) %>% summarise(count=n()) %>% arrange(-count)
+```
+
+The variable home_ownership shows the housing status of the loan applicants. The data reveals a clear concentration in two main categories. Most applicants either pay an active mortgage or rent their current residence.
+
+The exact numbers show 22215 individuals with a mortgage and 17868 renters. A distinctively smaller group of 4268 people completely owns their home. The remaining categories are extremely rare. The bar chart uses a logarithmic scale to make these tiny fractions visible. Only 14 people fall into the other category. Three applicants show none and just one single applicant is listed under any.
+
+```{r}
+#| label: fig-purpose-bar
+#| fig-cap: "Horizontal bar chart ranking the frequency of different loan purposes."
+
 ggplot(myLCdata, aes(x = purpose)) + 
   geom_bar(fill = "tomato") + 
   coord_flip() + 
@@ -175,7 +246,7 @@ myLCdata %>% group_by(purpose) %>% summarise(count=n()) %>% arrange(-count)
 
 The diagram shows the overall distribution of the loan purposes. Using a `group_by` pipeline, it can be seen that debt consolidation is the primary reason why the loan has been requested.
 
-To understand what debt consolidation is, we must take a look at the definition: \
+To understand what debt consolidation is, we must take a look at the definition:\
 "Debt consolidation is a form of debt refinancing that entails taking out one loan to pay off many others" (Wikipedia: Debt consolidation, 2026).
 
 This form of loan is common, as short term loans can have high interest rates, therefore, applicants may request a loan with a longer term, where the interest is significantly lower compared to short term loans.
@@ -187,7 +258,11 @@ Now we are looking for some obvious correlations or patterns of variables.
 **4.1 First impression with ggpairs()**
 
 ```{r}
-GGally::ggpairs(myLCdata %>% select(annual_inc, open_acc, purpose, home_ownership, inq_last_6mths))
+#| label: fig-ggpairs
+#| fig-cap: "Scatterplot matrix overviewing correlations between numerical and categorical variables."
+GGally::ggpairs(
+  myLCdata %>% 
+    select(annual_inc, open_acc, purpose, home_ownership, inq_last_6mths))
 ```
 
 In this ggpairs matrix we can see that the numeric variables (annual_inc, open_acc and inq_last_6mths) are heavily right-skewed. Furthermore these variables show extreme outliers, clustering most data points near zero.
@@ -201,6 +276,8 @@ This suggests that we need to transform the data using a log scale.
 -   home_ownership vs. annual_inc
 
 ```{r}
+#| label: fig-income-by-ownership
+#| fig-cap: "Boxplots comparing annual income across different home ownership categories."
 ggplot(myLCdata, aes(x = home_ownership, y = annual_inc, fill = home_ownership)) + 
   geom_boxplot(alpha = 0.7) +
   scale_y_log10(labels = scales::comma) +
@@ -230,6 +307,8 @@ myLCdata %>% group_by(home_ownership) %>%
 We use geom_jitter to add tiny amounts of random noise to the placement of the dots. We also add a trend line to see if there is any relationship.
 
 ```{r}
+#| label: fig-accounts-vs-inquiries
+#| fig-cap: "Scatterplot with a trend line showing the weak positive correlation between open accounts and recent inquiries."
 ggplot(myLCdata, aes(x = open_acc, y = inq_last_6mths)) +
   geom_jitter(alpha = 0.3, color = "purple", width = 0.25, height = 0.25) +
   geom_smooth(method = "lm", color = "black", se = FALSE) + 
@@ -267,6 +346,8 @@ ggplot(myLCdata, aes(x = purpose, fill = home_ownership)) +
 Lets look at this graph ordered by home_ownership == 'RENT', to better compare the different categories.
 
 ```{r}
+#| label: fig-purpose-stacked-bar
+#| fig-cap: "Stacked bar chart showing the proportion of home ownership types for each loan purpose."
 ggplot(myLCdata, aes(x = forcats::fct_reorder(purpose, home_ownership == "RENT", mean), fill = home_ownership)) + 
   # position = fill standardizes the bars to 1.0
   geom_bar(position = "fill", color = "white", linewidth = 0.2) +
@@ -290,10 +371,45 @@ At the bottom we see the reversal from above, where 'home_improvement' loans are
 
 **4.5 Adding a 3rd Variable**
 
-We will use facet_wrap
+We will use facet_wrap to add an third categorical variable.
 
 ```{r}
-ggplot(myLCdata) + geom_point(aes(x=annual_inc, y=inq_last_6mths)) + scale_x_log10() + scale_y_log10() + facet_wrap(~home_ownership)
-
-ggplot(myLCdata) + geom_point(aes(x=annual_inc, y=inq_last_6mths)) + scale_x_log10() + scale_y_log10() + facet_wrap(~purpose)
+#| label: fig-facet-ownership
+#| fig-cap: "Scatterplots facetted by home ownership showing the relationship between annual income and recent inquiries."
+ggplot(myLCdata) + 
+  geom_point(aes(x=annual_inc, y=inq_last_6mths, colour=home_ownership)) + 
+  scale_x_log10() + 
+  scale_y_log10() + 
+  facet_wrap(~home_ownership) +
+  labs(title="Distribution annual income and loan inquiries in the last 6 months by home ownership", x="Annual income (log)", y="Inquiries in the last 6 months (log)") + 
+  guides(colour=FALSE)
 ```
+
+The scatter plots display the distribution of recent credit inquiries against annual income divided by housing status. The vast majority of data points are concentrated in the mortgage, rent, and own categories. The remaining groups contain very few observations.
+
+There is no visible correlation between annual income and the number of inquiries. Applicants across all income levels generally show a low inquiry count. Most data points cluster tightly between zero and three inquiries within an income range of 10000 to 100000.
+
+The most extreme outliers belong to the rent category. The specific individuals with around 30 recent inquiries are renters. Applicants with a mortgage or outright homeownership rarely exceed a maximum of 10 inquiries.
+
+```{r}
+#| label: fig-facet-purpose
+#| fig-cap: "Scatterplots facetted by loan purpose showing the relationship between annual income and recent inquiries."
+ggplot(myLCdata) + 
+  geom_point(aes(x=annual_inc, y=inq_last_6mths, colour=purpose)) + 
+  scale_x_log10() + 
+  scale_y_log10() + 
+  facet_wrap(~purpose) +
+  labs(title="Relationship annual income and loan inquiries in the last 6 months by loan purpose", x="Annual income (log)", y="Inquiries in the last 6 months (log)") +
+  theme_minimal() +
+  guides(colour = FALSE) 
+```
+
+The scatter plots illustrate the relationship between annual income and loan purpose. Debt consolidation and credit card refinancing are the most frequent loan categories across all income brackets.
+
+Applicants with exceptionally high annual incomes predominantly seek loans for debt consolidation, home improvement, and credit card payments. The data points in these specific charts extend far to the right and well beyond the one million income mark.
+
+Educational loans represent a very small portion of the overall dataset. A few applicants with incomes below 10000 do seek educational loans. Other individuals with incomes up to 100000 also apply for this loan type. This category is therefore not entirely exclusive to the lowest income bracket.
+
+Categories like moving, vacations, and weddings are typically requested by individuals in lower to middle income ranges. The data points for these specific purposes rarely exceed an annual income of 200000.
+
+Small business loans attract a wide distribution of incomes. This category features a notable outlier with roughly 30 recent inquiries at a lower income level. A similar extreme outlier exists in the moving category.
